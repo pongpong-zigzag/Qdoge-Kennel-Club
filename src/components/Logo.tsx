@@ -27,10 +27,10 @@ const Logo = ({ className, ...props }: LogoProps) => (
         <tspan fill="hsl(var(--primary))">QDOGE</tspan>
       </text>
       <text
-        x="196"
+        x="178"
         y="82"
         fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
-        fontSize="18"
+        fontSize="24"
         fontWeight={600}
         fill="hsl(var(--muted-foreground))"
       >
