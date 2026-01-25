@@ -52,7 +52,7 @@ const AssetOrders: React.FC<{ issuer: string, asset: string, type: string }> = (
                                         <TableCell className="!text-right">{(assetOrder.price * assetOrder.numberOfShares).toLocaleString()}</TableCell>
                                         <TableCell className="!text-right">
                                             <Button variant="outline" size="sm" className={cn(type === "asks" ? "bg-green-500 text-white hover:bg-green-900" : "bg-red-500 text-white hover:bg-red-900")}>
-                                                {type === "asks" ? "Sell" : "Buy"}
+                                                {type === "asks" ? "Buy" : "Sell"}
                                             </Button>
                                         </TableCell>
                                     </TableRow>

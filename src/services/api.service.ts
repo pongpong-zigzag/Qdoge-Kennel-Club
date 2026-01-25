@@ -1,6 +1,61 @@
-import type { Asset, AssetOrder, AveragePrice, EntityOrder, IssuedAsset, Trade, Transfer } from "@/types";
+import type { Asset, AssetOrder, AveragePrice, EntityOrder, IssuedAsset, Trade, Transfer, OrderTemplate, OrderRequest } from "@/types";
 
 const API_URL = "https://api.quhub.app/service";
+
+export const createRemoveBidOrderTemplate = async ({from, numberOfShares, pricePerShare}: OrderRequest): Promise<OrderTemplate> => {
+  const response = await fetch(`${API_URL}/v1/qx/issuer/{issuer}/asset/{asset}/remove-bid`,{
+    method: "POST",
+    body: JSON.stringify({
+      from,
+      numberOfShares,
+      pricePerShare,
+    }),
+  });
+  const data = await response.json();
+  return data;
+}
+
+export const createRemoveAskOrderTemplate = async ({from, numberOfShares, pricePerShare}: OrderRequest): Promise<OrderTemplate> => {
+  const response = await fetch(`${API_URL}/v1/qx/issuer/{issuer}/asset/{asset}/remove-ask`,{
+    method: "POST",
+    body: JSON.stringify({
+      from,
+      numberOfShares,
+      pricePerShare,
+    }),
+  });
+  const data = await response.json();
+  return data;
+}
+
+export const createAddBidOrderTemplate = async ({from, numberOfShares, pricePerShare}: OrderRequest): Promise<OrderTemplate> => { 
+  const response = await fetch(`${API_URL}/v1/qx/issuer/{issuer}/asset/{asset}/add-bid`,{
+    method: "POST",
+    body: JSON.stringify({
+      from,
+      numberOfShares,
+      pricePerShare,
+    }),
+  });
+  const data = await response.json();
+  return data;
+}
+
+export const createAddAskOrderTemplate = async ({from, numberOfShares, pricePerShare}: OrderRequest): Promise<OrderTemplate> => {
+  const response = await fetch(`${API_URL}/v1/qx/issuer/{issuer}/asset/{asset}/add-ask`,{
+    method: "POST",
+    body: JSON.stringify({
+      from,
+      numberOfShares,
+      pricePerShare,
+    }),
+  });
+  const data = await response.json();
+  return data;
+}
+
+
+
 
 // Assets
 export const fetchAssets = async (): Promise<Asset[]> => {

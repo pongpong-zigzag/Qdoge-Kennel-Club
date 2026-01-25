@@ -4,7 +4,7 @@ import { settingsAtom } from "@/store/settings";
 import { motion } from "framer-motion";
 import { useAtom } from "jotai";
 import { MdLightMode, MdDarkMode } from "react-icons/md";
-import { UserIcon } from "lucide-react";
+import { UserIcon, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -31,6 +31,21 @@ const Header: React.FC = () => {
         </Link>
 
         <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/activity"
+                  className="rounded-lg border-none bg-transparent p-2 text-foreground transition-colors hover:text-primary"
+                >
+                  <Activity size={20} />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Activity</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <TooltipProvider>
             <Tooltip>

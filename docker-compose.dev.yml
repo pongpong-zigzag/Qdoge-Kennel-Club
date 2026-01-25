@@ -1,0 +1,81 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: qdoge-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - qdoge-dev-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: qdoge-backend-dev
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+      PYTHONUNBUFFERED: "1"
+      CORS_ORIGINS: "http://localhost:5174,http://72.60.123.249:5174,http://72.60.123.249:82"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8009:8009"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - qdoge-dev-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: qdoge-frontend-dev
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "5174:5174"
+    depends_on:
+      - backend
+    networks:
+      - qdoge-dev-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: qdoge-nginx-dev
+    restart: unless-stopped
+    ports:
+      - "82:82"
+      - "445:445"
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - qdoge-dev-network
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  qdoge-dev-network:
+    driver: bridge

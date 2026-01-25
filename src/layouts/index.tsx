@@ -30,7 +30,7 @@ const Layout: React.FC = () => {
   return (
     <div className="relative flex min-h-screen flex-col">
       <Header />
-      <div className="flex flex-1 pt-[56px] justify-center">
+      <div className="flex flex-1 pt-[56px]">
         <Outlet />
       </div>
       <Footer />

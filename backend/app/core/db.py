@@ -2,6 +2,9 @@ import asyncio
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum as PyEnum
+from urllib.parse import urlparse
+import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from sqlalchemy import (
     BigInteger,
@@ -322,6 +325,65 @@ def init_db() -> None:
     for optimal query performance and data integrity.
     """
     sync_url = get_sync_database_url()
+
+    # Create a new database if it doesn't exist
+
+    # Parse the database URL to extract components
+    parsed_url = urlparse(sync_url)
+    dbname = parsed_url.path.lstrip('/')
+    username = parsed_url.username
+    password = parsed_url.password
+    host = parsed_url.hostname
+    port = parsed_url.port
+
+    print(f"dbname: {dbname}, username: {username}, password: {password}, host: {host}, port: {port}")
+
+    # Connect to the PostgreSQL server
+    try:
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            user=username,
+            password=password,
+            database=dbname
+        )
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cursor = conn.cursor()
+
+        # Check and create user if not exists
+        cursor.execute(
+            "SELECT 1 FROM pg_roles WHERE rolname = %s",
+            (username,)
+        )
+        if not cursor.fetchone():
+            # Use format for identifier, parameter for password
+            cursor.execute(
+                f'CREATE USER "{username}" WITH PASSWORD %s',
+                (password,)
+            )
+            print(f"Created user: {username}")
+        else:
+            print(f"User already exists: {username}")
+
+        # Check and create database if not exists
+        cursor.execute(
+            "SELECT 1 FROM pg_database WHERE datname = %s",
+            (dbname,)
+        )
+        if not cursor.fetchone():
+            cursor.execute(f'CREATE DATABASE "{dbname}" OWNER "{username}"')
+            print(f"Created database: {dbname}")
+        else:
+            print(f"Database already exists: {dbname}")
+        
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error during database/user creation: {e}")
+        conn.rollback()
+        raise
+
+    # Create the engine
     engine = create_engine(sync_url, echo=True)
     
     # Create all tables

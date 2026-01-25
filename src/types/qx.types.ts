@@ -97,3 +97,19 @@ export type AveragePrice = {
   totalTrades: number;
   averagePrice: number;
 };
+
+export type OrderTemplate = {
+  currentTick: number;
+  from: string;
+  to: string;
+  inputType: number;
+  amount: number;
+  extraData: string;
+}
+
+export type OrderRequest = {
+  from: string;
+  numberOfShares: number;
+  pricePerShare: number;
+}
+
