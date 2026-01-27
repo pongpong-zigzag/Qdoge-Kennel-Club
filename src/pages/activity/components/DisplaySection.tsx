@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ActivityType } from "../types";
-import { useMemo } from "react";
+// import { useMemo } from "react";
 
 interface DisplaySectionProps {
   epoch: number;
@@ -10,18 +10,18 @@ interface DisplaySectionProps {
 const DisplaySection: React.FC<DisplaySectionProps> = ({ epoch, activity }) => {
   // This is a placeholder for future data fetching
   // In the future, you can fetch actual data based on epoch and activity type
-  const displayData = useMemo(() => {
-    // Placeholder data structure - replace with actual API calls
-    return {
-      epoch,
-      activity,
-      items: [],
-      summary: {
-        total: 0,
-        // Add more summary fields as needed
-      },
-    };
-  }, [epoch, activity]);
+  // const displayData = useMemo(() => {
+  //   // Placeholder data structure - replace with actual API calls
+  //   return {
+  //     epoch,
+  //     activity,
+  //     items: [],
+  //     summary: {
+  //       total: 0,
+  //       // Add more summary fields as needed
+  //     },
+  //   };
+  // }, [epoch, activity]);
 
   return (
     <motion.section
@@ -68,15 +68,7 @@ const DisplaySection: React.FC<DisplaySectionProps> = ({ epoch, activity }) => {
                 This section is ready for future implementation
               </p>
             </div>
-
-            {/* Future: Add data tables, charts, or other components here */}
-            {/* Example structure for future implementation:
-            {displayData.items.length > 0 ? (
-              <ActivityTable data={displayData.items} />
-            ) : (
-              <EmptyState message={`No ${activity} data found for epoch ${epoch}`} />
-            )}
-            */}
+           
           </div>
         </div>
       </div>

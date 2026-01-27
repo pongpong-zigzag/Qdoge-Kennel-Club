@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useAtom } from "jotai";
 import { tickInfoAtom } from "@/store/tickInfo";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import EpochSelectionSection from "./components/EpochSelectionSection";
 import ActivitySelectionSection from "./components/ActivitySelectionSection";
 import DisplaySection from "./components/DisplaySection";
@@ -58,7 +58,7 @@ const Activity: React.FC = () => {
         />
 
         {/* Section 2: Activity Selection */}
-        <AnimatePresence mode="sync">
+        <AnimatePresence mode="wait">
           {selectedEpoch && (
             <ActivitySelectionSection
               key={selectedEpoch}
@@ -70,7 +70,7 @@ const Activity: React.FC = () => {
         </AnimatePresence>
 
         {/* Section 3: Display Section */}
-        <AnimatePresence mode="sync">
+        <AnimatePresence mode="wait">
           {selectedActivity && selectedEpoch && (
             <DisplaySection
               key={`${selectedEpoch}-${selectedActivity}`}
