@@ -6,7 +6,11 @@ import { Link } from "react-router-dom";
 import { EXPLORER_URL } from "@/constants";
 import { cn } from "@/utils";
 
-const fmt = (n: number) => n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(0)}K` : n.toLocaleString();
+const fmt = (n: number) => {
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  return abs >= 1e6 ? `${sign}${(abs / 1e6).toFixed(1)}M` : abs >= 1e3 ? `${sign}${(abs / 1e3).toFixed(0)}K` : n.toLocaleString();
+};
 const short = (s: string) => `${s.slice(0, 5)}...${s.slice(-5)}`;
 const WalletLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
   <Link to={`/entity/${to}`} className="text-primary hover:text-primary/70">{children}</Link>
@@ -39,11 +43,11 @@ const EpochTrades: React.FC<{ epoch: number }> = ({ epoch }) => {
       (isBuy ? bMap : sMap).set(w, ((isBuy ? bMap : sMap).get(w) || 0) + amt);
       const t = tMap.get(w) || { wallet: w, buy: 0, sell: 0, total: 0 };
       isBuy ? (t.buy += amt) : (t.sell += amt);
-      t.total += amt;
+      t.total = t.buy - t.sell;
       tMap.set(w, t);
     });
     const toArr = (m: Map<string, number>) => [...m].map(([wallet, amount]) => ({ wallet, amount })).sort((a, b) => b.amount - a.amount);
-    return { buyers: toArr(bMap), sellers: toArr(sMap), totals: [...tMap.values()].sort((a, b) => b.total - a.total) };
+    return { buyers: toArr(bMap), sellers: toArr(sMap), totals: [...tMap.values()].sort((a, b) => Math.abs(b.total) - Math.abs(a.total)) };
   }, [trades]);
 
   if (isLoading || error || !trades.length) {
