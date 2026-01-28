@@ -29,6 +29,27 @@ export interface EpochTradesResponse {
   trades: EpochTrade[];
 }
 
+export interface AirdropResult {
+  rank: number;
+  wallet_id: string;
+  buy_amount: string;
+  airdrop_amount: string;
+}
+
+export interface AirdropResultsResponse {
+  epoch_num: number;
+  results: AirdropResult[];
+}
+
+export interface AirdropPreviewResponse {
+  epoch_num: number;
+  total_airdrop: string;
+  distributed: number;
+  is_ongoing: boolean;
+  preview: boolean;
+  results: AirdropResult[];
+}
+
 // Fetch all epochs
 export const fetchEpochs = async (): Promise<Epoch[]> => {
   const response = await fetch(`${BACKEND_API_URL}/epochs`);
@@ -67,4 +88,24 @@ export const fetchEpochTrades = async (epochNum: number): Promise<EpochTrade[]> 
   }
   const data: EpochTradesResponse = await response.json();
   return data.trades;
+};
+
+// Fetch airdrop results for a specific epoch
+export const fetchAirdropResults = async (epochNum: number): Promise<AirdropResult[]> => {
+  const response = await fetch(`${BACKEND_API_URL}/epochs/${epochNum}/airdrop-results`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch airdrop results for epoch ${epochNum}: ${response.statusText}`);
+  }
+  const data: AirdropResultsResponse = await response.json();
+  return data.results;
+};
+
+// Fetch airdrop preview for a specific epoch (real-time calculation)
+export const fetchAirdropPreview = async (epochNum: number): Promise<AirdropPreviewResponse> => {
+  const response = await fetch(`${BACKEND_API_URL}/epochs/${epochNum}/airdrop-preview`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch airdrop preview for epoch ${epochNum}: ${response.statusText}`);
+  }
+  const data: AirdropPreviewResponse = await response.json();
+  return data;
 };
