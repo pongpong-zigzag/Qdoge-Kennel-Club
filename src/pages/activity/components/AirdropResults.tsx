@@ -7,18 +7,26 @@ import { Link } from "react-router-dom";
 interface AirdropResultsProps {
   epoch: number;
   searchTerm?: string;
+  connectedWallet?: string | null;
 }
 
 const MEDAL_EMOJIS = { 1: "🥇", 2: "🥈", 3: "🥉" } as const;
 
-const WalletCell = ({ wallet, isZealyRegistered }: { wallet: string; isZealyRegistered: boolean }) => (
-  <div className="flex items-center gap-1">
-    <Link to={`/entity/${wallet}`} className="text-primary hover:text-primary/70">
-      {wallet.slice(0, 5)}...{wallet.slice(-5)}
-    </Link>
-    {isZealyRegistered && <span className="text-green-500 text-xs">✅</span>}
-  </div>
-);
+const WalletCell = ({ wallet, isZealyRegistered, connectedWallet }: { wallet: string; isZealyRegistered: boolean; connectedWallet: string | null }) => {
+  const isYou = connectedWallet && wallet === connectedWallet;
+  return (
+    <div className="flex items-center gap-1">
+      {isYou ? (
+        <span className="text-yellow-500 font-semibold">YOU</span>
+      ) : (
+        <Link to={`/entity/${wallet}`} className="text-primary hover:text-primary/70">
+          {wallet.slice(0, 5)}...{wallet.slice(-5)}
+        </Link>
+      )}
+      {isZealyRegistered && <span className="text-green-500 text-xs">✅</span>}
+    </div>
+  );
+};
 
 const formatAmount = (amount: string): string => {
   const num = Number(amount);
@@ -27,7 +35,7 @@ const formatAmount = (amount: string): string => {
   return num.toLocaleString();
 };
 
-const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "" }) => {
+const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "", connectedWallet = null }) => {
   const [results, setResults] = useState<AirdropResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -138,7 +146,7 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "" 
                       </div>
                     </TableCell>
                     <TableCell>
-                      <WalletCell wallet={result.wallet_id} isZealyRegistered={result.is_zealy_registered} />
+                      <WalletCell wallet={result.wallet_id} isZealyRegistered={result.is_zealy_registered} connectedWallet={connectedWallet} />
                     </TableCell>
                     <TableCell className="!text-right text-green-500 font-medium">
                       {formatAmount(result.buy_amount)}

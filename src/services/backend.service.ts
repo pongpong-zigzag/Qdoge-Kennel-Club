@@ -140,3 +140,18 @@ export const fetchEpochTransfers = async (epochNum: number): Promise<EpochTransf
   const data: EpochTransfersResponse = await response.json();
   return data.transfers;
 };
+
+// Register user when wallet connects
+export const registerUser = async (walletId: string): Promise<{ success: boolean; wallet_id: string; is_new: boolean }> => {
+  const response = await fetch(`${BACKEND_API_URL}/users/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ wallet_id: walletId }),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to register user: ${response.statusText}`);
+  }
+  return response.json();
+};
