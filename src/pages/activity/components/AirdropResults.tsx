@@ -1,8 +1,11 @@
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { fetchAirdropResults, fetchAirdropPreview, type AirdropResult } from "@/services/backend.service";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 interface AirdropResultsProps {
   epoch: number;
@@ -81,6 +84,36 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "",
     return results.filter(r => r.wallet_id.toLowerCase().includes(term));
   }, [results, searchTerm]);
 
+  // Download Excel file
+  const handleDownloadExcel = useCallback(() => {
+    if (results.length === 0) return;
+
+    // Prepare data with only wallet_id and airdrop_amount
+    const excelData = results.map((r) => ({
+      wallet_id: r.wallet_id,
+      airdrop_amt: r.airdrop_amount,
+    }));
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Set column widths
+    worksheet["!cols"] = [
+      { wch: 62 }, // wallet_id column width
+      { wch: 20 }, // airdrop_amt column width
+    ];
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Airdrop Results");
+
+    // Generate filename with epoch number
+    const filename = `airdrop_epoch_${epoch}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(workbook, filename);
+  }, [results, epoch]);
+
   return (
     <div className="flex w-full flex-col gap-4">
       {/* Header */}
@@ -93,11 +126,24 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "",
             </Badge>
           )}
         </div>
-        {totalAirdrop !== "0" && (
-          <div className="text-sm text-muted-foreground">
-            Total: <span className="font-semibold text-foreground">{formatAmount(totalAirdrop)}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {totalAirdrop !== "0" && (
+            <div className="text-sm text-muted-foreground">
+              Total: <span className="font-semibold text-foreground">{formatAmount(totalAirdrop)}</span>
+            </div>
+          )}
+          {results.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadExcel}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download Excel
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Table - Auto height based on content */}
