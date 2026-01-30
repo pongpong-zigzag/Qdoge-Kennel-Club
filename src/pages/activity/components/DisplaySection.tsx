@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { ActivityType } from "../types";
 import EpochTrades from "./EpochTrades";
+import EpochTransfers from "./EpochTransfers";
 import AirdropResults from "./AirdropResults";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
@@ -30,7 +31,7 @@ const DisplaySection: React.FC<DisplaySectionProps> = ({ epoch, activity }) => {
             <h2 className="text-sm md:text-base font-semibold text-foreground">{activity} Details</h2>
             <p className="text-xs text-muted-foreground">Epoch {epoch}</p>
           </div>
-          {(activity === "Trade" || activity === "Airdrop") && (
+          {(activity === "Trade" || activity === "Transfer" || activity === "Airdrop") && (
             <div className="relative w-full max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -56,6 +57,8 @@ const DisplaySection: React.FC<DisplaySectionProps> = ({ epoch, activity }) => {
         <div className="mx-auto max-w-6xl h-full">
           {activity === "Trade" ? (
             <EpochTrades epoch={epoch} searchTerm={searchTerm} />
+          ) : activity === "Transfer" ? (
+            <EpochTransfers epoch={epoch} searchTerm={searchTerm} />
           ) : activity === "Airdrop" ? (
             <AirdropResults epoch={epoch} searchTerm={searchTerm} />
           ) : (
