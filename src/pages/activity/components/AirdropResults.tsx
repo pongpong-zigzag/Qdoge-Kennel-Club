@@ -88,9 +88,11 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "",
   const handleDownloadExcel = useCallback(() => {
     if (results.length === 0) return;
 
-    // Prepare data with only wallet_id and airdrop_amount
+    // Prepare data with all fields
     const excelData = results.map((r) => ({
       wallet_id: r.wallet_id,
+      token_amt: r.token_amount,
+      buy_amt: r.buy_amount,
       airdrop_amt: r.airdrop_amount,
     }));
 
@@ -100,6 +102,8 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "",
     // Set column widths
     worksheet["!cols"] = [
       { wch: 62 }, // wallet_id column width
+      { wch: 15 }, // token_amt column width
+      { wch: 15 }, // buy_amt column width
       { wch: 20 }, // airdrop_amt column width
     ];
 
@@ -176,7 +180,8 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "",
                 <TableRow>
                   <TableHead>Rank</TableHead>
                   <TableHead>Wallet ID</TableHead>
-                  <TableHead>Buy Amount</TableHead>
+                  <TableHead>Token Amt</TableHead>
+                  <TableHead>Buy Amt</TableHead>
                   <TableHead>Airdrop Amount</TableHead>
                 </TableRow>
               </TableHeader>
@@ -193,6 +198,9 @@ const AirdropResults: React.FC<AirdropResultsProps> = ({ epoch, searchTerm = "",
                     </TableCell>
                     <TableCell>
                       <WalletCell wallet={result.wallet_id} isZealyRegistered={result.is_zealy_registered} connectedWallet={connectedWallet} />
+                    </TableCell>
+                    <TableCell className="!text-right text-blue-500 font-medium">
+                      {formatAmount(result.token_amount)}
                     </TableCell>
                     <TableCell className="!text-right text-green-500 font-medium">
                       {formatAmount(result.buy_amount)}

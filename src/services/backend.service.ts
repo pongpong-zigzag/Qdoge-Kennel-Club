@@ -36,6 +36,7 @@ export interface AirdropResult {
   wallet_id: string;
   is_zealy_registered: boolean;
   buy_amount: string;
+  token_amount: string;
   airdrop_amount: string;
 }
 
